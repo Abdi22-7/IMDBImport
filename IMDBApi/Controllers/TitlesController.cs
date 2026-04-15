@@ -22,6 +22,7 @@ public class TitlesController : ControllerBase
         using var conn = new SqlConnection(_connStr);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("EXEC sp_SearchTitles @SearchTerm", conn);
+        cmd.CommandTimeout = 120;
         cmd.Parameters.AddWithValue("@SearchTerm", term);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -44,6 +45,7 @@ public class TitlesController : ControllerBase
         using var conn = new SqlConnection(_connStr);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("EXEC sp_AddTitle @TitleType, @PrimaryTitle, @OriginalTitle, @StartYear, @IsAdult", conn);
+        cmd.CommandTimeout = 120;
         cmd.Parameters.AddWithValue("@TitleType", req.TitleType);
         cmd.Parameters.AddWithValue("@PrimaryTitle", req.PrimaryTitle);
         cmd.Parameters.AddWithValue("@OriginalTitle", req.OriginalTitle);
@@ -60,6 +62,7 @@ public class TitlesController : ControllerBase
         using var conn = new SqlConnection(_connStr);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("EXEC sp_UpdateTitle @TConst, @PrimaryTitle, @StartYear", conn);
+        cmd.CommandTimeout = 120;
         cmd.Parameters.AddWithValue("@TConst", tconst);
         cmd.Parameters.AddWithValue("@PrimaryTitle", req.PrimaryTitle);
         cmd.Parameters.AddWithValue("@StartYear", (object?)req.StartYear ?? DBNull.Value);
@@ -74,6 +77,7 @@ public class TitlesController : ControllerBase
         using var conn = new SqlConnection(_connStr);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("EXEC sp_DeleteTitle @TConst", conn);
+        cmd.CommandTimeout = 120;
         cmd.Parameters.AddWithValue("@TConst", tconst);
         await cmd.ExecuteNonQueryAsync();
         return Ok("Film slettet!");
