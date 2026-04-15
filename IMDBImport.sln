@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36705.20 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMDBImport", "IMDBImport.csproj", "{76F1C6CD-2C1F-44F2-8559-7BCC4E88D6A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMDBApi", "..\IMDBApi\IMDBApi.csproj", "{C077F857-86B4-4FF7-8E7B-611DB34E1ED3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{76F1C6CD-2C1F-44F2-8559-7BCC4E88D6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F1C6CD-2C1F-44F2-8559-7BCC4E88D6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76F1C6CD-2C1F-44F2-8559-7BCC4E88D6A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C077F857-86B4-4FF7-8E7B-611DB34E1ED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C077F857-86B4-4FF7-8E7B-611DB34E1ED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C077F857-86B4-4FF7-8E7B-611DB34E1ED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C077F857-86B4-4FF7-8E7B-611DB34E1ED3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
