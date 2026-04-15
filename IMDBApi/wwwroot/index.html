@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>IMDB Søgning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        input {
+            padding: 8px;
+            width: 250px;
+            margin: 4px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            cursor: pointer;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 IMDB Søgning</h1>
+
+    <h2>Søg film</h2>
+    <input type="text" id="titleSearch" placeholder="Søg efter film...">
+    <button onclick="searchTitles()">Søg</button>
+    <table>
+        <thead><tr><th>ID</th><th>Type</th><th>Titel</th><th>År</th><th>Handlinger</th></tr></thead>
+        <tbody id="titlesBody"></tbody>
+    </table>
+
+    <h2>Søg person</h2>
+    <input type="text" id="personSearch" placeholder="Søg efter person...">
+    <button onclick="searchPersons()">Søg</button>
+    <table>
+        <thead><tr><th>ID</th><th>Navn</th><th>Født</th><th>Død</th></tr></thead>
+        <tbody id="personsBody"></tbody>
+    </table>
+
+    <h2>Tilføj film</h2>
+    <input type="text" id="newTitleType" placeholder="Type (movie/tvSeries)">
+    <input type="text" id="newPrimaryTitle" placeholder="Titel">
+    <input type="text" id="newOriginalTitle" placeholder="Original titel">
+    <input type="number" id="newStartYear" placeholder="År">
+    <button onclick="addTitle()">Tilføj</button>
+
+    <h2>Tilføj person</h2>
+    <input type="text" id="newPersonName" placeholder="Navn">
+    <input type="number" id="newBirthYear" placeholder="Fødselsår">
+    <button onclick="addPerson()">Tilføj</button>
+
+    <script>
+        const API = 'http://localhost:5123';
+
+        async function searchTitles() {
+            const term = document.getElementById('titleSearch').value;
+            const res = await fetch(`${API}/api/titles/search?term=${term}`);
+            const data = await res.json();
+            document.getElementById('titlesBody').innerHTML = data.map(t => `
+                    <tr>
+                        <td>${t.tConst}</td>
+                        <td>${t.titleType}</td>
+                        <td id="title-${t.tConst}">${t.primaryTitle}</td>
+                        <td id="year-${t.tConst}">${t.startYear ?? '-'}</td>
+                        <td>
+                            <button class="btn-edit" onclick="editTitle(${t.tConst})">Rediger</button>
+                            <button class="btn-delete" onclick="deleteTitle(${t.tConst})">Slet</button>
+                        </td>
+                    </tr>`).join('');
+        }
+
+        async function editTitle(tconst) {
+            const nyTitel = prompt("Ny titel:", document.getElementById(`title-${tconst}`).innerText);
+            if (!nyTitel) return;
+            const nytAar = prompt("Nyt år:", document.getElementById(`year-${tconst}`).innerText);
+            const res = await fetch(`${API}/api/titles/${tconst}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ primaryTitle: nyTitel, startYear: parseInt(nytAar) || null })
+            });
+            alert(await res.text());
+            searchTitles();
+        }
+
+        async function deleteTitle(tconst) {
+            if (!confirm("Er du sikker på du vil slette denne film?")) return;
+            const res = await fetch(`${API}/api/titles/${tconst}`, { method: 'DELETE' });
+            alert(await res.text());
+            searchTitles();
+        }
+
+        async function searchPersons() {
+            const term = document.getElementById('personSearch').value;
+            const res = await fetch(`${API}/api/persons/search?term=${term}`);
+            const data = await res.json();
+            document.getElementById('personsBody').innerHTML = data.map(p => `
+                    <tr>
+                        <td>${p.nConst}</td>
+                        <td>${p.primaryName}</td>
+                        <td>${p.birthYear ?? '-'}</td>
+                        <td>${p.deathYear ?? '-'}</td>
+                    </tr>`).join('');
+        }
+
+        async function addTitle() {
+            const body = {
+                titleType: document.getElementById('newTitleType').value,
+                primaryTitle: document.getElementById('newPrimaryTitle').value,
+                originalTitle: document.getElementById('newOriginalTitle').value,
+                startYear: parseInt(document.getElementById('newStartYear').value) || null,
+                isAdult: false
+            };
+            const res = await fetch(`${API}/api/titles`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            alert(await res.text());
+        }
+
+        async function addPerson() {
+            const body = {
+                primaryName: document.getElementById('newPersonName').value,
+                birthYear: parseInt(document.getElementById('newBirthYear').value) || null
+            };
+            const res = await fetch(`${API}/api/persons`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            alert(await res.text());
+        }
+    </script>
+</body>
+</html>
